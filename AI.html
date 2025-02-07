@@ -74,15 +74,23 @@
 
       // run the webcam image through the image model
       async function predict() {
-        // predict can take in an image, video or canvas html element
+        // Get predictions
         const prediction = await model.predict(webcam.canvas);
-        for (let i = 0; i < maxPredictions; i++) {
-          const classPrediction =
-            prediction[i].className +
-            ": " +
-            prediction[i].probability.toFixed(2);
-          labelContainer.childNodes[i].innerHTML = classPrediction;
+
+        // Assume the first prediction is the best
+        let bestPrediction = prediction[0];
+
+        // Loop through predictions to find the one with the highest probability
+        for (let i = 1; i < prediction.length; i++) {
+          if (prediction[i].probability > bestPrediction.probability) {
+            bestPrediction = prediction[i];
+          }
         }
+
+        // Display only the highest probability prediction
+        labelContainer.childNodes[0].innerHTML = `I think it's a ${
+          bestPrediction.className
+        }, and I'm ${bestPrediction.probability.toFixed(2) * 100}% sure!`;
       }
     </script>
     <br />
